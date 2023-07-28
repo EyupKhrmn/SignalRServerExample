@@ -1,8 +1,18 @@
+using SignalRServerExample.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSignalR();
+
+builder.Services.AddCors(option=>option.AddDefaultPolicy(policy=>
+    policy.AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()
+        .SetIsOriginAllowed(orign => true)));
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -16,7 +26,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseEndpoints(_ =>
+{
+    _.MapHub<ChatHub>("/chathub");
+});
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 
